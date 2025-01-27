@@ -4,12 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSocket Client</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            flex-direction: column;
+        }
+    </style>
 </head>
 <body>
-    <h1>WebSocket Client</h1>
-    <input type="text" id="messageInput" placeholder="Enter your message" />
-    <button onclick="sendMessage()">Send</button>
-    <div id="messages"></div>
-    <script src="client.js"></script>
+    <h1>Rasptank Control</h1>
+    <div id="gamepad"></div>
+    <script src="virtual_joystick.js" type="module"></script>
 </body>
 </html>
