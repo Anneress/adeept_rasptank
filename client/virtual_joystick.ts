@@ -24,37 +24,37 @@ class VirtualJoystick {
     }
 
     private addEventListeners() {
-        this.canvas.addEventListener("touchstart", (e) => this.onTouchStart(e), false);
-        this.canvas.addEventListener("touchmove", (e) => this.onTouchMove(e), false);
-        this.canvas.addEventListener("touchend", () => this.onTouchEnd(), false);
+        this.canvas.addEventListener("pointerdown", (e) => this.onPointerDown(e), false);
+        this.canvas.addEventListener("pointermove", (e) => this.onPointerMove(e), false);
+        this.canvas.addEventListener("pointerup", () => this.onPointerUp(), false);
+        this.canvas.addEventListener("pointercancel", () => this.onPointerUp(), false);
     }
 
-    private onTouchStart(event: TouchEvent) {
-        const touch = event.touches[0];
-        this.touchStart = this.getTouchPosition(touch);
+    private onPointerDown(event: PointerEvent) {
+        this.canvas.setPointerCapture(event.pointerId);
+        this.touchStart = this.getPointerPosition(event);
         this.touchMove = this.touchStart;
     }
 
-    private onTouchMove(event: TouchEvent) {
+    private onPointerMove(event: PointerEvent) {
         if (this.touchStart) {
-            const touch = event.touches[0];
-            this.touchMove = this.getTouchPosition(touch);
+            this.touchMove = this.getPointerPosition(event);
             this.updateDirection();
         }
     }
 
-    private onTouchEnd() {
+    private onPointerUp() {
         this.touchStart = null;
         this.touchMove = null;
         this.direction = { x: 0, y: 0 };
         this.onRelease?.();
     }
 
-    private getTouchPosition(touch: Touch): Vector2 {
+    private getPointerPosition(event: PointerEvent): Vector2 {
         const rect = this.canvas.getBoundingClientRect();
         return {
-            x: touch.clientX - rect.left,
-            y: touch.clientY - rect.top,
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
         };
     }
 
