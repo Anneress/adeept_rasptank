@@ -113,7 +113,7 @@ canvas.width = 400;
 canvas.height = 400;
 (_a = document.getElementById("gamepad")) === null || _a === void 0 ? void 0 : _a.append(canvas);
 const joystick = new VirtualJoystick("gameCanvas");
-const moveVectorSender = new MoveVectorSender("ws://localhost:8000");
+const moveVectorSender = new MoveVectorSender(`ws://${location.hostname}:8000`);
 joystick.onRelease = () => moveVectorSender.sendStop();
 moveVectorSender.start(joystick);
 function gameLoop() {
