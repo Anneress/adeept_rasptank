@@ -33,11 +33,11 @@ class VirtualJoystick {
         }
     }
     onPointerUp() {
-        var _b;
+        var _a;
         this.touchStart = null;
         this.touchMove = null;
         this.direction = { x: 0, y: 0 };
-        (_b = this.onRelease) === null || _b === void 0 ? void 0 : _b.call(this);
+        (_a = this.onRelease) === null || _a === void 0 ? void 0 : _a.call(this);
     }
     getPointerPosition(event) {
         const rect = this.canvas.getBoundingClientRect();
@@ -68,21 +68,57 @@ class VirtualJoystick {
         }
     }
     render() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.fillStyle = "lightBlue";
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.beginPath();
-        this.context.arc(this.canvas.width / 2, this.canvas.width / 2, this.radius, 0, Math.PI * 2);
-        this.context.strokeStyle = "gray";
-        this.context.stroke();
-        if (this.touchStart) {
-            if (this.touchMove) {
-                this.context.beginPath();
-                this.context.arc(this.touchMove.x, this.touchMove.y, 30, 0, Math.PI * 2);
-                this.context.fillStyle = "blue";
-                this.context.fill();
-            }
+        const ctx = this.context;
+        const centerX = this.canvas.width / 2;
+        const centerY = this.canvas.height / 2;
+        const isActive = this.touchStart !== null;
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // Base pad
+        ctx.save();
+        ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+        ctx.shadowBlur = 20;
+        ctx.shadowOffsetY = 6;
+        const baseGradient = ctx.createRadialGradient(centerX, centerY, this.radius * 0.1, centerX, centerY, this.radius);
+        baseGradient.addColorStop(0, "#3a4750");
+        baseGradient.addColorStop(1, "#232c33");
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = baseGradient;
+        ctx.fill();
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Knob: derived from the current direction so it is always visible,
+        // even at rest, and stays within the base's bounds.
+        const knobRadius = 36;
+        const knobX = centerX + this.direction.x * (this.radius - knobRadius / 2);
+        const knobY = centerY - this.direction.y * (this.radius - knobRadius / 2);
+        ctx.save();
+        ctx.shadowColor = isActive ? "rgba(74, 158, 255, 0.6)" : "rgba(0, 0, 0, 0.3)";
+        ctx.shadowBlur = isActive ? 18 : 8;
+        ctx.shadowOffsetY = 3;
+        const knobGradient = ctx.createRadialGradient(knobX - knobRadius * 0.3, knobY - knobRadius * 0.3, knobRadius * 0.1, knobX, knobY, knobRadius);
+        if (isActive) {
+            knobGradient.addColorStop(0, "#6fb6ff");
+            knobGradient.addColorStop(1, "#2f7dd6");
         }
+        else {
+            knobGradient.addColorStop(0, "#8a97a1");
+            knobGradient.addColorStop(1, "#5b6670");
+        }
+        ctx.beginPath();
+        ctx.arc(knobX, knobY, knobRadius, 0, Math.PI * 2);
+        ctx.fillStyle = knobGradient;
+        ctx.fill();
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(knobX, knobY, knobRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = isActive ? "#bfe0ff" : "rgba(255, 255, 255, 0.25)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
     }
 }
 class MoveVectorSender {

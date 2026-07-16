@@ -1,6 +1,9 @@
 client/node_modules/
 client/test-results/
 client/playwright-report/
+client/package-lock.json
+client/playwright.config.js
+client/tests/*.js
 server/venv/
 __pycache__/
 .DS_Store
