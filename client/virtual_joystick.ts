@@ -105,6 +105,7 @@ class VirtualJoystick {
 class MoveVectorSender {
     private socket: WebSocket;
     private readonly sendIntervalMs = 50;
+    private lastSentWasZero = false;
 
     constructor(url: string) {
         this.socket = new WebSocket(url);
@@ -117,10 +118,16 @@ class MoveVectorSender {
     }
 
     public sendStop() {
+        this.lastSentWasZero = false;
         this.send({ type: "stop" });
     }
 
     private sendMove(direction: Vector2) {
+        const isZero = direction.x === 0 && direction.y === 0;
+        if (isZero && this.lastSentWasZero) {
+            return;
+        }
+        this.lastSentWasZero = isZero;
         this.send({ type: "move", x: direction.x, y: direction.y });
     }
 

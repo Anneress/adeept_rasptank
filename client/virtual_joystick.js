@@ -88,6 +88,7 @@ class VirtualJoystick {
 class MoveVectorSender {
     constructor(url) {
         this.sendIntervalMs = 50;
+        this.lastSentWasZero = false;
         this.socket = new WebSocket(url);
         this.socket.onopen = () => console.log("Connected to WebSocket server");
         this.socket.onclose = () => console.log("Disconnected from WebSocket server");
@@ -96,9 +97,15 @@ class MoveVectorSender {
         setInterval(() => this.sendMove(joystick.direction), this.sendIntervalMs);
     }
     sendStop() {
+        this.lastSentWasZero = false;
         this.send({ type: "stop" });
     }
     sendMove(direction) {
+        const isZero = direction.x === 0 && direction.y === 0;
+        if (isZero && this.lastSentWasZero) {
+            return;
+        }
+        this.lastSentWasZero = isZero;
         this.send({ type: "move", x: direction.x, y: direction.y });
     }
     send(payload) {
