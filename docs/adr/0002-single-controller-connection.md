@@ -1,0 +1,3 @@
+# Only one controlling connection at a time
+
+A tank should have exactly one pilot. If two clients could send `MoveVector`s concurrently, their commands would race and the tank's behavior would depend on message arrival order, which is confusing and unsafe. We decided the server accepts only one active WebSocket connection at a time: a second connection attempt while one is already active is rejected outright, rather than displacing the existing connection. This means a stale or hung connection doesn't get silently kicked; it must be cleanly closed (or lost, triggering the [ADR-0001](0001-disconnect-stops-motors.md) disconnect-stop) before a new controller can take over.

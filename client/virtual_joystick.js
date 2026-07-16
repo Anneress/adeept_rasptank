@@ -5,7 +5,9 @@ class VirtualJoystick {
         this.touchStart = null;
         this.touchMove = null;
         this.radius = 150;
+        this.deadzone = 0.1;
         this.direction = { x: 0, y: 0 };
+        this.onRelease = null;
         this.canvas = document.getElementById(canvasId);
         if (!this.canvas) {
             throw new Error("Canvas element not found");
@@ -31,9 +33,11 @@ class VirtualJoystick {
         }
     }
     onTouchEnd() {
+        var _b;
         this.touchStart = null;
         this.touchMove = null;
         this.direction = { x: 0, y: 0 };
+        (_b = this.onRelease) === null || _b === void 0 ? void 0 : _b.call(this);
     }
     getTouchPosition(touch) {
         const rect = this.canvas.getBoundingClientRect();
@@ -47,14 +51,19 @@ class VirtualJoystick {
             const dx = this.touchMove.x - this.touchStart.x;
             const dy = this.touchMove.y - this.touchStart.y;
             const magnitude = Math.sqrt(dx * dx + dy * dy);
+            if (magnitude / this.radius < this.deadzone) {
+                this.direction = { x: 0, y: 0 };
+                return;
+            }
+            // Screen y grows downward; MoveVector.y is positive forward, so it's inverted here.
             if (magnitude > this.radius) {
                 this.direction = {
                     x: dx / magnitude,
-                    y: dy / magnitude,
+                    y: -dy / magnitude,
                 };
             }
             else {
-                this.direction = { x: dx / this.radius, y: dy / this.radius };
+                this.direction = { x: dx / this.radius, y: -dy / this.radius };
             }
         }
     }
@@ -76,18 +85,39 @@ class VirtualJoystick {
         }
     }
 }
-// Example of using the joystick in a game loop
+class MoveVectorSender {
+    constructor(url) {
+        this.sendIntervalMs = 50;
+        this.socket = new WebSocket(url);
+        this.socket.onopen = () => console.log("Connected to WebSocket server");
+        this.socket.onclose = () => console.log("Disconnected from WebSocket server");
+    }
+    start(joystick) {
+        setInterval(() => this.sendMove(joystick.direction), this.sendIntervalMs);
+    }
+    sendStop() {
+        this.send({ type: "stop" });
+    }
+    sendMove(direction) {
+        this.send({ type: "move", x: direction.x, y: direction.y });
+    }
+    send(payload) {
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify(payload));
+        }
+    }
+}
 const canvas = document.createElement("canvas");
 canvas.id = "gameCanvas";
 canvas.width = 400;
 canvas.height = 400;
-//document.body.appendChild(canvas);
 (_a = document.getElementById("gamepad")) === null || _a === void 0 ? void 0 : _a.append(canvas);
 const joystick = new VirtualJoystick("gameCanvas");
+const moveVectorSender = new MoveVectorSender("ws://localhost:8000");
+joystick.onRelease = () => moveVectorSender.sendStop();
+moveVectorSender.start(joystick);
 function gameLoop() {
     joystick.render();
-    // Example: Logging the joystick direction
-    // console.log("Direction:", joystick.direction);
     requestAnimationFrame(gameLoop);
 }
 gameLoop();
