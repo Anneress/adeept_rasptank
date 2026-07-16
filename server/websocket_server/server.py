@@ -43,6 +43,8 @@ async def _connection_handler(websocket):
     try:
         async for message in websocket:
             await _handle_message(message)
+    except websockets.exceptions.ConnectionClosed:
+        logger.info("Client disconnected without a clean close handshake")
     finally:
         _active_connection = None
         await handle_stop_event()

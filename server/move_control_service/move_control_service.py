@@ -19,8 +19,8 @@ def _clamp(value: float, low: float = -1.0, high: float = 1.0) -> float:
 async def move(x: float, y: float) -> None:
     x = _clamp(x)
     y = _clamp(y)
-    _left_motor.value = _clamp(y + x)
-    _right_motor.value = _clamp(y - x)
+    _left_motor.value = _clamp(y - x)
+    _right_motor.value = _clamp(y + x)
 
 
 async def stop() -> None:
