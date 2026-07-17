@@ -7,17 +7,18 @@ from adafruit_pca9685 import PCA9685
 
 logger = logging.getLogger(__name__)
 
-TILT_CHANNEL = 2
+TILT_CHANNEL = 3
 TILT_MIN_DEG = 0
-TILT_MAX_DEG = 80
-TILT_INIT_DEG = 40
-TILT_STEP_DEG = 5
+TILT_MAX_DEG = 25
+TILT_INIT_DEG = 12
+TILT_STEP_DEG = 2
 
-# Reference calibration (Adeept RaspTank kit, PCA9685 channel 2): raw ticks
-# 100-500 out of 4096 at 50Hz, relabeled linearly as TILT_MIN_DEG-TILT_MAX_DEG.
-_PERIOD_US = 20_000
-_MIN_PULSE_US = round(100 / 4096 * _PERIOD_US)
-_MAX_PULSE_US = round(500 / 4096 * _PERIOD_US)
+# Empirically measured on this build (channel 3): 0 deg hits the top
+# mechanical endstop, 25 deg hits the bottom one. The reference kit's
+# channel-2 tick calibration (100-500 raw ticks) does not apply here -
+# this servo's usable travel is a narrower slice of that pulse range.
+_MIN_PULSE_US = 488
+_MAX_PULSE_US = 1098
 
 _i2c = busio.I2C(board.SCL, board.SDA)
 _pca = PCA9685(_i2c)
