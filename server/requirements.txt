@@ -3,3 +3,8 @@ gpiozero
 adafruit-blinka
 adafruit-circuitpython-pca9685
 adafruit-circuitpython-motor
+
+# picamera2 is not installed via pip: it ships as the apt package
+# python3-picamera2 with a libcamera build matched to the OS image.
+# The venv must be created with --system-site-packages (see start.sh)
+# so it can see the system-wide installation.

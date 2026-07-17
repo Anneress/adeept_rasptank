@@ -1,0 +1,3 @@
+# MJPEG-over-HTTP for the camera video stream
+
+The client needs to view a live camera feed while driving the tank. We considered piping video frames through the existing control WebSocket, and WebRTC for lower latency. We chose MJPEG served over a separate HTTP port (8001) instead: it keeps video traffic off the control WebSocket entirely (no risk of large frames delaying motor/tilt commands), needs no signaling/ICE setup, and is natively supported by the browser via a plain `<img>` tag. WebRTC's latency advantage matters less on a local network and isn't worth the added complexity and CPU cost on the Pi.
