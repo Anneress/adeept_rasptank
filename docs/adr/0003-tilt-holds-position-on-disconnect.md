@@ -1,0 +1,3 @@
+# Camera tilt holds its position on disconnect
+
+[ADR-0001](0001-disconnect-stops-motors.md) treats any WebSocket disconnect as an implicit stop for the tracks, because a tank that keeps driving after losing its controller is a safety hazard. The camera tilt servo has no equivalent risk — a stationary camera unit left at whatever angle it was last pointed at cannot hurt anyone or drive off. We decided the server does *not* reset **TiltAngle** on disconnect: it stays at its last commanded position, and the next controlling connection picks up from there rather than from the 40° home position. This is a deliberate divergence from ADR-0001's reasoning, scoped specifically to why that ADR does not apply here.

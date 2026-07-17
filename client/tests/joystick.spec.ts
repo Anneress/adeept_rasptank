@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 
-type Message = { type: string; x?: number; y?: number };
+type Message = { type: string; x?: number; y?: number; direction?: string };
 
 async function captureMoveVectorMessages(page: Page): Promise<Message[]> {
     const messages: Message[] = [];
@@ -80,5 +80,47 @@ test.describe("Virtual joystick", () => {
         await page.waitForTimeout(200);
 
         expect(messages.some((m) => m.type === "move" && ((m.x ?? 0) !== 0 || (m.y ?? 0) !== 0))).toBe(false);
+    });
+});
+
+test.describe("Camera tilt buttons", () => {
+    test("pressing up sends a tilt-up message", async ({ page }) => {
+        const messages = await captureMoveVectorMessages(page);
+        await page.goto("/");
+
+        const upButton = page.locator("#tiltUp");
+        await upButton.dispatchEvent("pointerdown");
+        await expect
+            .poll(() => messages.some((m) => m.type === "tilt" && m.direction === "up"))
+            .toBe(true);
+        await upButton.dispatchEvent("pointerup");
+    });
+
+    test("pressing down sends a tilt-down message", async ({ page }) => {
+        const messages = await captureMoveVectorMessages(page);
+        await page.goto("/");
+
+        const downButton = page.locator("#tiltDown");
+        await downButton.dispatchEvent("pointerdown");
+        await expect
+            .poll(() => messages.some((m) => m.type === "tilt" && m.direction === "down"))
+            .toBe(true);
+        await downButton.dispatchEvent("pointerup");
+    });
+
+    test("holding the button repeats the tilt message", async ({ page }) => {
+        const messages = await captureMoveVectorMessages(page);
+        await page.goto("/");
+
+        const upButton = page.locator("#tiltUp");
+        await upButton.dispatchEvent("pointerdown");
+        await expect
+            .poll(() => messages.filter((m) => m.type === "tilt" && m.direction === "up").length)
+            .toBeGreaterThan(2);
+        await upButton.dispatchEvent("pointerup");
+
+        const countAfterRelease = messages.filter((m) => m.type === "tilt").length;
+        await page.waitForTimeout(300);
+        expect(messages.filter((m) => m.type === "tilt").length).toBe(countAfterRelease);
     });
 });

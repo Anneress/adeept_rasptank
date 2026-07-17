@@ -1,2 +1,5 @@
 websockets==14.1
 gpiozero
+adafruit-blinka
+adafruit-circuitpython-pca9685
+adafruit-circuitpython-motor

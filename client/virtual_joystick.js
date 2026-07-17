@@ -1,10 +1,11 @@
 "use strict";
 var _a;
 class VirtualJoystick {
-    constructor(canvasId) {
+    constructor(canvasId, size) {
         this.touchStart = null;
         this.touchMove = null;
         this.radius = 150;
+        this.knobRadius = 36;
         this.deadzone = 0.1;
         this.direction = { x: 0, y: 0 };
         this.onRelease = null;
@@ -13,7 +14,14 @@ class VirtualJoystick {
             throw new Error("Canvas element not found");
         }
         this.context = this.canvas.getContext("2d");
+        this.resize(size);
         this.addEventListeners();
+    }
+    resize(size) {
+        this.canvas.width = size;
+        this.canvas.height = size;
+        this.radius = size * VirtualJoystick.RADIUS_RATIO;
+        this.knobRadius = size * VirtualJoystick.KNOB_RADIUS_RATIO;
     }
     addEventListeners() {
         this.canvas.addEventListener("pointerdown", (e) => this.onPointerDown(e), false);
@@ -93,7 +101,7 @@ class VirtualJoystick {
         ctx.stroke();
         // Knob: derived from the current direction so it is always visible,
         // even at rest, and stays within the base's bounds.
-        const knobRadius = 36;
+        const knobRadius = this.knobRadius;
         const knobX = centerX + this.direction.x * (this.radius - knobRadius / 2);
         const knobY = centerY - this.direction.y * (this.radius - knobRadius / 2);
         ctx.save();
@@ -121,13 +129,14 @@ class VirtualJoystick {
         ctx.stroke();
     }
 }
+// Tuned against the original fixed 400px canvas (radius 150, knob radius 36).
+VirtualJoystick.RADIUS_RATIO = 150 / 400;
+VirtualJoystick.KNOB_RADIUS_RATIO = 36 / 400;
 class MoveVectorSender {
-    constructor(url) {
+    constructor(socket) {
         this.sendIntervalMs = 50;
         this.lastSentWasZero = false;
-        this.socket = new WebSocket(url);
-        this.socket.onopen = () => console.log("Connected to WebSocket server");
-        this.socket.onclose = () => console.log("Disconnected from WebSocket server");
+        this.socket = socket;
     }
     start(joystick) {
         setInterval(() => this.sendMove(joystick.direction), this.sendIntervalMs);
@@ -150,15 +159,58 @@ class MoveVectorSender {
         }
     }
 }
+class TiltButtons {
+    constructor(socket, upButton, downButton) {
+        this.repeatIntervalMs = 100;
+        this.repeatHandle = null;
+        this.socket = socket;
+        this.bindButton(upButton, "up");
+        this.bindButton(downButton, "down");
+    }
+    bindButton(button, direction) {
+        const start = (event) => {
+            event.preventDefault();
+            this.sendTilt(direction);
+            this.repeatHandle = setInterval(() => this.sendTilt(direction), this.repeatIntervalMs);
+        };
+        const stop = () => {
+            if (this.repeatHandle !== null) {
+                clearInterval(this.repeatHandle);
+                this.repeatHandle = null;
+            }
+        };
+        button.addEventListener("pointerdown", start);
+        button.addEventListener("pointerup", stop);
+        button.addEventListener("pointercancel", stop);
+        button.addEventListener("pointerleave", stop);
+    }
+    sendTilt(direction) {
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify({ type: "tilt", direction }));
+        }
+    }
+}
+const MAX_JOYSTICK_SIZE = 400;
+const MIN_JOYSTICK_SIZE = 220;
+function computeJoystickSize() {
+    const horizontalBudget = window.innerWidth - 48;
+    const verticalBudget = window.innerHeight - 220;
+    return Math.max(MIN_JOYSTICK_SIZE, Math.min(MAX_JOYSTICK_SIZE, horizontalBudget, verticalBudget));
+}
 const canvas = document.createElement("canvas");
 canvas.id = "gameCanvas";
-canvas.width = 400;
-canvas.height = 400;
 (_a = document.getElementById("gamepad")) === null || _a === void 0 ? void 0 : _a.append(canvas);
-const joystick = new VirtualJoystick("gameCanvas");
-const moveVectorSender = new MoveVectorSender(`ws://${location.hostname}:8000`);
+const joystick = new VirtualJoystick("gameCanvas", computeJoystickSize());
+window.addEventListener("resize", () => joystick.resize(computeJoystickSize()));
+const socket = new WebSocket(`ws://${location.hostname}:8000`);
+socket.onopen = () => console.log("Connected to WebSocket server");
+socket.onclose = () => console.log("Disconnected from WebSocket server");
+const moveVectorSender = new MoveVectorSender(socket);
 joystick.onRelease = () => moveVectorSender.sendStop();
 moveVectorSender.start(joystick);
+const tiltUpButton = document.getElementById("tiltUp");
+const tiltDownButton = document.getElementById("tiltDown");
+new TiltButtons(socket, tiltUpButton, tiltDownButton);
 function gameLoop() {
     joystick.render();
     requestAnimationFrame(gameLoop);
