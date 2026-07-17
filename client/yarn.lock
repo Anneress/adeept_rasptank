@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@playwright/test@^1.49.1":
+  version "1.61.1"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.61.1.tgz#48568dc22af7819e55fa5e8e3bc79b7e6a3e6675"
+  integrity sha512-8nKv6+0RJSL9FE4jYOEGXnPeM/Hg12qZpmqzZjRh3qM0Y7c3z1mrOTfFLids72RDQYVh9WpLEfR5WdpNX4fkig==
+  dependencies:
+    playwright "1.61.1"
+
 ansi-styles@^4.1.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-4.3.0.tgz#edd803628ae71c04c85ae7a0906edad34b648937"
@@ -107,6 +114,11 @@ follow-redirects@^1.0.0:
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.9.tgz#a604fa10e443bf98ca94228d9eebcc2e8a2c8ee1"
   integrity sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==
 
+fsevents@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
+
 function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.2.tgz#2c02d864d97f3ea6c8830c464cbd11ab6eab7a1c"
@@ -210,6 +222,11 @@ lodash@^4.17.14:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
+lucide-static@^1.25.0:
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/lucide-static/-/lucide-static-1.25.0.tgz#d44930d6e5815faace63d9fd9c46c0cadabaaae8"
+  integrity sha512-uJTdyP8vxKELd+Kqk45ahUvOA1rv3Ehy6ZUP7JlBt8UJwmzHgFFts0OZNU3C6/4MDKsssgR9Jrut7GnuqGgYmg==
+
 math-intrinsics@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz#a0dd74be81e2aa5c2f27e65ce283605ee4e2b7f9"
@@ -246,6 +263,20 @@ opener@^1.5.1:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
   integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
+
+playwright-core@1.61.1:
+  version "1.61.1"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.61.1.tgz#3c99841307efbbabc9d724c41a88c914705d15fc"
+  integrity sha512-h7Qlt6m4REp25qvIdvbDtVmD4LqVXfpRxhORv9L0jzETM05p4fuPJ3dKyuSXQxDSbXnmS79HAgi9589lGSpLkg==
+
+playwright@1.61.1:
+  version "1.61.1"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.61.1.tgz#d8c0c06eb93c28981afc747bace453bdbd5018bc"
+  integrity sha512-DWnY5o3YbLWK4GovuAVwpqL+1VwGNdUGrRr++8j8PtQQzvAVZUIMjKQ90fY689sEJZJBbZVw1rXaOKSTitkzPQ==
+  dependencies:
+    playwright-core "1.61.1"
+  optionalDependencies:
+    fsevents "2.3.2"
 
 portfinder@^1.0.28:
   version "1.0.32"
