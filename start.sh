@@ -33,7 +33,7 @@ trap cleanup EXIT INT TERM
 (cd "$SERVER_DIR" && exec "$VENV_DIR/bin/python3" run_server.py) &
 pids+=($!)
 
-(cd "$SERVER_DIR" && exec "$VENV_DIR/bin/python3" camera_stream_service/run_camera_server.py) &
+(cd "$SERVER_DIR" && exec "$VENV_DIR/bin/python3" run_camera_server.py) &
 pids+=($!)
 
 (cd "$CLIENT_DIR" && exec npm start) &
