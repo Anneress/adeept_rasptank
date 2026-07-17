@@ -87,8 +87,8 @@ class VirtualJoystick {
         ctx.shadowBlur = 20;
         ctx.shadowOffsetY = 6;
         const baseGradient = ctx.createRadialGradient(centerX, centerY, this.radius * 0.1, centerX, centerY, this.radius);
-        baseGradient.addColorStop(0, "#3a4750");
-        baseGradient.addColorStop(1, "#232c33");
+        baseGradient.addColorStop(0, "rgba(58, 71, 80, 0.5)");
+        baseGradient.addColorStop(1, "rgba(35, 44, 51, 0.5)");
         ctx.beginPath();
         ctx.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
         ctx.fillStyle = baseGradient;
@@ -96,7 +96,7 @@ class VirtualJoystick {
         ctx.restore();
         ctx.beginPath();
         ctx.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
         ctx.lineWidth = 2;
         ctx.stroke();
         // Knob: derived from the current direction so it is always visible,
@@ -110,12 +110,12 @@ class VirtualJoystick {
         ctx.shadowOffsetY = 3;
         const knobGradient = ctx.createRadialGradient(knobX - knobRadius * 0.3, knobY - knobRadius * 0.3, knobRadius * 0.1, knobX, knobY, knobRadius);
         if (isActive) {
-            knobGradient.addColorStop(0, "#6fb6ff");
-            knobGradient.addColorStop(1, "#2f7dd6");
+            knobGradient.addColorStop(0, "rgba(111, 182, 255, 0.75)");
+            knobGradient.addColorStop(1, "rgba(47, 125, 214, 0.75)");
         }
         else {
-            knobGradient.addColorStop(0, "#8a97a1");
-            knobGradient.addColorStop(1, "#5b6670");
+            knobGradient.addColorStop(0, "rgba(138, 151, 161, 0.7)");
+            knobGradient.addColorStop(1, "rgba(91, 102, 112, 0.7)");
         }
         ctx.beginPath();
         ctx.arc(knobX, knobY, knobRadius, 0, Math.PI * 2);
@@ -192,9 +192,15 @@ class TiltButtons {
 }
 const MAX_JOYSTICK_SIZE = 400;
 const MIN_JOYSTICK_SIZE = 220;
+// #controls is anchored bottom-right with the tilt buttons (64px) and a 16px
+// gap next to the joystick, so the horizontal budget has to leave room for
+// those alongside the joystick, not just the joystick itself.
+const TILT_CONTROLS_WIDTH = 64;
+const CONTROLS_GAP = 16;
+const CONTROLS_MARGIN = 16;
 function computeJoystickSize() {
-    const horizontalBudget = window.innerWidth - 48;
-    const verticalBudget = window.innerHeight - 220;
+    const horizontalBudget = window.innerWidth - TILT_CONTROLS_WIDTH - CONTROLS_GAP - CONTROLS_MARGIN * 2;
+    const verticalBudget = window.innerHeight - CONTROLS_MARGIN * 2;
     return Math.max(MIN_JOYSTICK_SIZE, Math.min(MAX_JOYSTICK_SIZE, horizontalBudget, verticalBudget));
 }
 const canvas = document.createElement("canvas");
