@@ -27,6 +27,7 @@ _Avoid_: tilt delta, camera move
 - The server accepts only one active controlling connection at a time; a second connection attempt is rejected while the first is active (see [ADR-0002](docs/adr/0002-single-controller-connection.md)).
 - The client's up/down buttons send a **tilt step** on press and repeatedly while held; the server applies each one to its stored **TiltAngle** and drives the camera servo via PCA9685 channel 3.
 - Unlike **MoveVector**, **TiltAngle** is not reset on WebSocket disconnect — it holds its last position (see [ADR-0003](docs/adr/0003-tilt-holds-position-on-disconnect.md)).
+- The camera also exposes a continuous MJPEG video stream over its own HTTP port (8001), served by a dedicated process separate from the control server (see [ADR-0004](docs/adr/0004-mjpeg-http-video-stream.md) and [ADR-0005](docs/adr/0005-camera-runs-in-dedicated-process.md)). Viewing the stream is decoupled from the **MoveVector**/**tilt step** control connection — it requires no active controller and no authentication, and any number of clients may view it at once.
 
 ## Example dialogue
 

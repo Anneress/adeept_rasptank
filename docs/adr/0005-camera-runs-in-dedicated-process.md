@@ -1,0 +1,3 @@
+# Camera capture runs in a dedicated process, separate from the control server
+
+`picamera2`'s capture/encoding APIs are blocking, not asyncio-native. Running them in the same event loop as the control WebSocket risked a video-side stall (encoder hang, I/O stutter) freezing motor/tilt command processing too. We run camera capture and the MJPEG HTTP server as their own OS process, isolated from the control server, so a video-side fault can never delay steering. A future computer-vision component will live in this same camera process rather than the control process, since `libcamera` only allows one process exclusive access to the camera hardware.
