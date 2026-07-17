@@ -3,6 +3,7 @@ import logging
 
 import websockets
 
+from camera_control_service.camera_control_handler import handle_tilt_event
 from move_control_service.move_control_handler import handle_move_event, handle_stop_event
 
 logger = logging.getLogger(__name__)
@@ -28,6 +29,12 @@ async def _handle_message(message: str) -> None:
         await handle_move_event(x, y)
     elif message_type == "stop":
         await handle_stop_event()
+    elif message_type == "tilt":
+        direction = data.get("direction")
+        if direction not in ("up", "down"):
+            logger.warning("Ignoring malformed tilt message: %r", message)
+            return
+        await handle_tilt_event(direction)
     else:
         logger.warning("Ignoring unknown message type: %r", message_type)
 
