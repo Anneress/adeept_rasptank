@@ -111,8 +111,8 @@ class VirtualJoystick {
             centerX, centerY, this.radius * 0.1,
             centerX, centerY, this.radius,
         );
-        baseGradient.addColorStop(0, "rgba(58, 71, 80, 0.5)");
-        baseGradient.addColorStop(1, "rgba(35, 44, 51, 0.5)");
+        baseGradient.addColorStop(0, "rgba(58, 71, 80, 0.18)");
+        baseGradient.addColorStop(1, "rgba(35, 44, 51, 0.18)");
         ctx.beginPath();
         ctx.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
         ctx.fillStyle = baseGradient;
@@ -121,7 +121,7 @@ class VirtualJoystick {
 
         ctx.beginPath();
         ctx.arc(centerX, centerY, this.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -233,16 +233,20 @@ class TiltButtons {
 const MAX_JOYSTICK_SIZE = 400;
 const MIN_JOYSTICK_SIZE = 220;
 
-// #controls is anchored bottom-right with the tilt buttons (64px) and a 16px
-// gap next to the joystick, so the horizontal budget has to leave room for
-// those alongside the joystick, not just the joystick itself.
-const TILT_CONTROLS_WIDTH = 64;
+// #controls is anchored bottom-right. Below BREAKPOINT (matches the CSS
+// media query in index.html) the tilt buttons stack above the joystick, so
+// the vertical budget must leave room for them; above it, they sit beside
+// the joystick instead, so the horizontal budget must leave the room.
+const BREAKPOINT = 641;
+const TILT_CONTROLS_SIZE = 64;
 const CONTROLS_GAP = 16;
 const CONTROLS_MARGIN = 16;
 
 function computeJoystickSize(): number {
-    const horizontalBudget = window.innerWidth - TILT_CONTROLS_WIDTH - CONTROLS_GAP - CONTROLS_MARGIN * 2;
-    const verticalBudget = window.innerHeight - CONTROLS_MARGIN * 2;
+    const isSideBySide = window.innerWidth >= BREAKPOINT;
+    const reservedSpace = TILT_CONTROLS_SIZE + CONTROLS_GAP;
+    const horizontalBudget = window.innerWidth - CONTROLS_MARGIN * 2 - (isSideBySide ? reservedSpace : 0);
+    const verticalBudget = window.innerHeight - CONTROLS_MARGIN * 2 - (isSideBySide ? 0 : reservedSpace);
     return Math.max(MIN_JOYSTICK_SIZE, Math.min(MAX_JOYSTICK_SIZE, horizontalBudget, verticalBudget));
 }
 

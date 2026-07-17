@@ -64,7 +64,7 @@
 
         #tiltControls {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 12px;
             touch-action: none;
         }
@@ -93,8 +93,23 @@
             bottom: 16px;
             z-index: 1;
             display: flex;
-            align-items: flex-end;
+            flex-direction: column;
+            align-items: center;
             gap: 16px;
+        }
+
+        /* Above this breakpoint (see BREAKPOINT in virtual_joystick.ts), the
+           tilt buttons move from stacked above the joystick to a vertical
+           pair beside it, centered on it. */
+        @media (min-width: 641px) {
+            #controls {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            #tiltControls {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
