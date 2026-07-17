@@ -4,6 +4,7 @@ import socketserver
 from http import server
 from threading import Condition
 
+from libcamera import Transform
 from picamera2 import Picamera2
 from picamera2.encoders import MJPEGEncoder, Quality
 from picamera2.outputs import FileOutput
@@ -15,6 +16,9 @@ HEIGHT = 480
 FRAMERATE = 24
 PORT = 8001
 STREAM_PATH = "/stream.mjpg"
+
+# The ov5647 module sits rotated 180 deg in this tank's chassis.
+_CAMERA_TRANSFORM = Transform(hflip=1, vflip=1)
 
 
 class _StreamingOutput(io.BufferedIOBase):
@@ -75,6 +79,7 @@ def run() -> None:
     config = picam2.create_video_configuration(
         main={"size": (WIDTH, HEIGHT)},
         controls={"FrameRate": FRAMERATE},
+        transform=_CAMERA_TRANSFORM,
     )
     picam2.configure(config)
     picam2.start_recording(MJPEGEncoder(), FileOutput(output), quality=Quality.MEDIUM)
